@@ -2,7 +2,7 @@
 -- the second number or returns 0
 DELIMITER $$
 CREATE FUNCTION SafeDiv(a INT, b INT)
-RETURNS INT
+RETURNS FLOAT
 DETERMINISTIC
 BEGIN
     -- checks if the second number is 0
@@ -10,6 +10,7 @@ BEGIN
        RETURN 0;
     ELSE
        RETURN a / b;
+    END IF;
 END$$
 
 DELIMITER ;
