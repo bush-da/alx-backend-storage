@@ -1,8 +1,8 @@
 -- Script that creates a function to calculate weighted average
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS ComputerAverageScoreForUser $$
-CREATE PROCEDURE ComputeAverageScoreForUser(
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser $$
+CREATE PROCEDURE ComputeAverageWeightedScoreForUser(
        IN user_id INT
 )
 BEGIN
