@@ -1,16 +1,15 @@
--- Script that create a trigger to reset valid_email row when email changed
+-- Script that creates a trigger to reset valid_email row when email changes
 DROP TRIGGER IF EXISTS reset_valid_email;
 
 DELIMITER $$
 
 CREATE TRIGGER reset_valid_email
-AFTER UPDATE ON users
+BEFORE UPDATE ON users
 FOR EACH ROW
 BEGIN
+    -- Check if the email has changed
     IF OLD.email <> NEW.email THEN
-       UPDATE users
-       SET valid_email = 0
-       WHERE id = NEW.id;
+        SET NEW.valid_email = 0;
     END IF;
 END$$
 
