@@ -15,7 +15,7 @@ BEGIN
     JOIN projects p ON p.id = c.project_id
     WHERE c.user_id = user_id
 
-    IF weight_avg > 0 THEN
+    IF total_weight > 0 THEN
        SET weight_avg = weight_avg / total_weight;
     ELSE
        SET weight_avg = 0;
