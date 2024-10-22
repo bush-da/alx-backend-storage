@@ -1,0 +1,2 @@
+// Uses or create a mongodb databases
+use my_db;
