@@ -28,7 +28,7 @@ def call_history(method: Callable) -> Callable:
     """
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        # Generate Redis keys for inputs and outputs
+        """Generate Redis keys for inputs and outputs"""
         input_key = f"{method.__qualname__}:inputs"
         output_key = f"{method.__qualname__}:outputs"
 
@@ -44,6 +44,7 @@ def call_history(method: Callable) -> Callable:
 
 
 class Cache:
+    """Cache class"""
     def __init__(self):
         """Initialize the Cache instance with
         a Redis client and flush the database."""
