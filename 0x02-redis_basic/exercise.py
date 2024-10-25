@@ -57,8 +57,8 @@ class Cache:
         Store the given data in Redis with a randomly generated key.
 
         Args:
-            data: The data to store, which can be of type
-        str, bytes, int, or float.
+            data: The data to store, which can be of
+        type str, bytes, int, or float.
 
         Returns:
             The key under which the data is stored in Redis.
@@ -74,3 +74,33 @@ class Cache:
     def get_int(self, key: str) -> Union[int, None]:
         """Retrieve an integer from Redis."""
         return self.get(key, fn=int)
+
+
+def replay(method: Callable) -> None:
+    """
+    Display the history of calls of a particular function.
+
+    Args:
+        method: The function for which the call history should be displayed.
+    """
+    # Get the qualified name of the method
+    qualname = method.__qualname__
+
+    # Get the call count from Redis
+    cache_instance = method.__self__
+    call_count = cache_instance._redis.get(qualname)
+    if call_count:
+        call_count = int(call_count)
+    else:
+        call_count = 0
+
+    print(f"{qualname} was called {call_count} times:")
+
+    # Retrieve inputs and outputs
+    inputs = cache_instance._redis.lrange(f"{qualname}:inputs", 0, -1)
+    outputs = cache_instance._redis.lrange(f"{qualname}:outputs", 0, -1)
+
+    # Display each input-output pair
+    for input_args, output in zip(inputs, outputs):
+        print(f"{qualname}(*{input_args.decode('utf-8')}) -> \
+        {output.decode('utf-8')}")
