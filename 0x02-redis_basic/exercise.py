@@ -3,6 +3,7 @@
 import redis
 import uuid
 from typing import Union, Callable, Optional
+import functools
 
 
 def count_calls(method: Callable) -> Callable:
