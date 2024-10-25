@@ -29,8 +29,8 @@ def count_calls(method: Callable) -> Callable:
 
 class Cache:
     def __init__(self):
-        """Initialize the Cache instance with a Redis
-        client and flush the database."""
+        """Initialize the Cache instance with a
+        Redis client and flush the database."""
         self._redis = redis.Redis()
         self._redis.flushdb()
 
@@ -40,8 +40,8 @@ class Cache:
         Store the given data in Redis with a randomly generated key.
 
         Args:
-            data: The data to store, which can be
-        of type str, bytes, int, or float.
+            data: The data to store, which can be of type
+        str, bytes, int, or float.
 
         Returns:
             The key under which the data is stored in Redis.
