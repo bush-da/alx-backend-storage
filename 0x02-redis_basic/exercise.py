@@ -3,21 +3,17 @@
 import redis
 import uuid
 from typing import Union, Callable
-import functools
+from functools import wraps
 
 
 def count_calls(method: Callable) -> Callable:
-    """
-    Decorator to count the number of times a method is called.
+    '''Tracks the number of calls made to a method in a Cache class.
+    '''
+    @wraps(method)
+    def wrapper(self, *args, **kwargs) -> Any:
+        '''returns the given method after incrementing its call counter.
+        '''
 
-    Args:
-        method: The method to be wrapped and counted.
-
-    Returns:
-        A wrapped method that increments a call count each time it is called.
-    """
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
         if isinstance(self._redis, redis.Redis):
             self._redis.incr(method.__qualname__)
         return method(self, *args, **kwargs)
@@ -35,7 +31,7 @@ def call_history(method: Callable) -> Callable:
     Returns:
         A wrapped method that stores input and output history.
     """
-    @functools.wraps(method)
+    @wraps(method)
     def wrapper(self, *args, **kwargs):
         """Generate Redis keys for inputs and outputs"""
         input_key = f"{method.__qualname__}:inputs"
