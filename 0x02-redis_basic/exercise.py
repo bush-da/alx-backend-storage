@@ -27,33 +27,6 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
-def call_history(method: Callable) -> Callable:
-    """
-    Decorator to store the history of inputs and outputs for a method.
-
-    Args:
-        method: The method to be decorated.
-
-    Returns:
-        A wrapped method that stores input and output history.
-    """
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        # Generate Redis keys for inputs and outputs
-        input_key = f"{method.__qualname__}:inputs"
-        output_key = f"{method.__qualname__}:outputs"
-
-        # Store the input arguments as a string in Redis
-        self._redis.rpush(input_key, str(args))
-
-        # Execute the method and store its output
-        result = method(self, *args, **kwargs)
-        self._redis.rpush(output_key, str(result))
-
-        return result
-    return wrapper
-
-
 class Cache:
     def __init__(self):
         """Initialize the Cache instance with a Redis
@@ -62,7 +35,6 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
-    @call_history  # Apply both decorators to store
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store the given data in Redis with a randomly generated key.
@@ -77,6 +49,27 @@ class Cache:
         key = str(uuid.uuid4())  # Generate a random key
         self._redis.set(key, data)  # Store data in Redis with the random key
         return key
+
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float,
+                                                    None]:
+        """
+        Retrieve data from Redis, optionally
+        converting it using a provided callable.
+
+        Args:
+            key: The key of the data to retrieve.
+            fn: A callable used to convert the data back to the desired format.
+
+        Returns:
+            The data retrieved from Redis, optionally converted using `fn`.
+        """
+        data = self._redis.get(key)  # Retrieve data from Redis
+        if data is None:
+            return None  # If the key does not exist, return None
+        if fn:
+            return fn(data)  # Apply the conversion function if provided
+        return data  # Return raw data if no conversion is applied
 
     def get_str(self, key: str) -> Union[str, None]:
         """Retrieve a string from Redis."""
